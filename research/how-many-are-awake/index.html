@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at; img-src 'self' data: https://data-curator.goatcounter.com; style-src 'self' 'unsafe-inline'; connect-src https://data-curator.goatcounter.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <title>How Many Are Awake?</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" type="application/rss+xml" title="Data Curator RSS" href="https://rss.app/feeds/kDpYVwGCRAAz6UXc.xml">
+  <meta name="description" content="At the intersection of Technology, Data, Intelligence, Analysis, AI and Humanity.">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">Data Curator</a>
+      <div class="nav-links">
+        <a href="/">Editions</a>
+        <a href="/research/">Research Notes</a>
+        <a href="/about">About</a>
+        <a href="https://www.linkedin.com/newsletters/data-curator-7365797519051677698" class="subscribe-btn">Subscribe on LinkedIn</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    
+<article class="research-note research-note-full">
+  <p><a class="back-link" href="/research/">← All Research Notes</a></p>
+  <p class="research-kicker">Research note · 13 September 2026</p>
+  <h1>How many are awake?</h1>
+  <p class="note-lede">Sparse and dense local models inside a multi-hop research agent: nine instrumented runs on one question and one laptop, with the raw data.</p>
+
+  <dl class="note-meta">
+    <dt>Question</dt>
+    <dd>“What did the PISA 2025 study find about Israel, and how do the results compare with previous cycles?”</dd>
+    <dt>Runs</dt>
+    <dd>9 variant runs in 3 comparisons · 108 model calls · 288 extracted claims · 114 sources</dd>
+    <dt>Machine</dt>
+    <dd>Apple M5 Pro, 48 GB unified memory, macOS 26.6.2</dd>
+    <dt>Stack</dt>
+    <dd>Ollama 0.34.0 · SearXNG 2026.9.7 · Python 3.12 · SQLite + sqlite-vec 0.1.6</dd>
+  </dl>
+
+  <nav class="note-toc" aria-label="Contents">
+    <a href="#findings">Findings</a>
+    <a href="#system">The system under test</a>
+    <a href="#setup">Setup and controls</a>
+    <a href="#results">Results</a>
+  </nav>
+
+  <section id="findings">
+    <h2>Findings</h2>
+    <ul class="findings">
+      <li><strong>The two sparse models were the two fastest single-model runs.</strong> gpt-oss:20b finished in 108 s, 7.6–11.4× faster than the three dense models run alongside it (825–1,234 s). The sparse gemma4:26b-a4b took 787 s against 1,812 s for its dense sibling.</li>
+      <li><strong>Inside one model family, sparsity bought speed, not thoroughness.</strong> The sparse Gemma finished in 43% of the dense Gemma’s time and ran a second search round, but that round added no claims. On the eight identical first-round pages it extracted 27 claims to the dense model’s 33, and 16 distinct figures to 27. Every one of its 16 figures was also found by the dense model.</li>
+      <li><strong>The gap is in the arithmetic per token.</strong> On a cache-busted ~7k-token prompt, the sparse models prefilled at 1,155–1,369 tokens/s and decoded at 61–65 tokens/s. The dense models managed 62–345 and 8.6–19.7.</li>
+      <li><strong>The reader role dominates the workload and caps the content.</strong> The evaluator made 81–89% of all model calls in every run, and the writer only sees the claims the evaluator extracted.</li>
+      <li><strong>A mixed team did not beat its members on content.</strong> gpt-oss planning and reading with qwen3.8 writing took 244 s, against 108 s for gpt-oss alone and 1,023 s for qwen3.8 alone. It produced a longer report (850 vs 721 words), but its coverage lead over gpt-oss alone was within the run-to-run variation of the same reader.</li>
+      <li><strong>Errors enter at the reader, and the citation gate cannot see them.</strong> In one run gpt-oss recorded 59% for a figure its source gives as 60%. The number reached the final report with a valid citation, and every automated check passed.</li>
+      <li><strong>Three quirks in Ollama’s own metrics can reverse a conclusion.</strong> They are JSON-mode thinking left out of token counts, queue time billed to calls, and prompt-cache-inflated prefill rates.</li>
+    </ul>
+  </section>
+
+  <section id="system">
+    <h2>The system under test</h2>
+    <p>The agent answers a question by iterating plan → search → fetch → evaluate → synthesize. Three roles call a model, and each role can use a different one:</p>
+    <ul>
+      <li><strong>Planner.</strong> Breaks the question into sub-questions with search queries, and re-plans when a sub-question is under-covered.</li>
+      <li><strong>Evaluator (the reader).</strong> Reads one fetched page against one sub-question. It returns relevance, coverage, whether the page answers the sub-question, and a list of claims. Claims below relevance 0.35 are dropped.</li>
+      <li><strong>Synthesizer (the writer).</strong> Receives only the kept claims, grouped by source key, and writes a report.</li>
+    </ul>
+    <p>Pages come from a self-hosted SearXNG instance, with robots.txt respected. A sub-question closes once two pages independently answer it. The run stops as <code>covered</code> when every sub-question closes, or <code>budget_exhausted</code> at the round limit. A hard <em>citation gate</em> rejects any report sentence that does not cite a source the run actually retrieved.</p>
+
+    <figure class="note-diagram">
+      <div class="pipeline" aria-label="Research pipeline">
+        <span>Question</span><b>→</b><span>Planner</span><b>→</b><span>Search</span><b>→</b><span>Fetch</span><b>→</b><span class="key">Reader</span><b>→</b><span>Writer</span>
+      </div>
+      <figcaption><strong>Figure 1.</strong> The writer never sees page text, only claims. The reader made 81–89% of all model calls.</figcaption>
+    </figure>
+  </section>
+
+  <section id="setup">
+    <h2>Setup and controls</h2>
+    <p>Three comparisons, all on the same question with the same effort settings:</p>
+    <ul>
+      <li><strong>E1</strong>: one model in all three roles. gpt-oss:20b, muse-glimmer:30b-mlx, qwen3.8 and gemma4:31b-mlx.</li>
+      <li><strong>E2</strong>: the same family, dense against sparse. gemma4:31b against gemma4:26b-a4b.</li>
+      <li><strong>E3</strong>: a mixed team (gpt-oss plans and reads, qwen3.8 writes) against each member alone.</li>
+    </ul>
+
+    <h3>Models</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Model</th><th>Architecture</th><th>Total</th><th>Active per token</th><th>On disk</th><th>Used in</th></tr></thead>
+      <tbody>
+        <tr><td><code>gpt-oss:20b</code></td><td class="sparse-label">Sparse · 32 experts, 4 routed</td><td>20.9B</td><td>≈3.6B</td><td>13.8 GB</td><td>E1, E3</td></tr>
+        <tr><td><code>gemma4:26b-a4b-it-q4_K_M</code></td><td class="sparse-label">Sparse · 128 experts, 8 routed</td><td>25.8B</td><td>≈4B</td><td>18.0 GB</td><td>E2</td></tr>
+        <tr><td><code>gemma4:31b</code></td><td class="dense-label">Dense</td><td>31.3B</td><td>31.3B</td><td>19.9 GB</td><td>E2</td></tr>
+        <tr><td><code>gemma4:31b-mlx</code></td><td class="dense-label">Dense</td><td>31.3B</td><td>31.3B</td><td>20.2 GB</td><td>E1</td></tr>
+        <tr><td><code>qwen3.8:latest</code></td><td class="dense-label">Dense</td><td>27.3B</td><td>27.3B</td><td>17.7 GB</td><td>E1, E3</td></tr>
+        <tr><td><code>muse-glimmer:30b-mlx</code></td><td class="dense-label">Dense · provenance unverified</td><td>32.3B</td><td>32.3B</td><td>21.2 GB</td><td>E1</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The two sparse models sit on disk (and in memory) close to their dense neighbours. Sparsity cuts the compute per token, not the memory footprint.</p>
+
+    <h3>Effort settings and controls</h3>
+    <div class="table-wrap"><table>
+      <tbody>
+        <tr><td>Search rounds (max)</td><td>2</td><td>Sub-questions</td><td>2</td></tr>
+        <tr><td>URLs per round</td><td>6</td><td>Pages evaluated per round</td><td>5</td></tr>
+        <tr><td>Answering pages to close a sub-question</td><td>2</td><td>Synthesis passes</td><td>1</td></tr>
+        <tr><td>Thinking</td><td>medium</td><td>Thinking, reader</td><td>low</td></tr>
+        <tr><td>Temperature</td><td>0.2</td><td>Engines</td><td>duckduckgo, brave</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><strong>Shared seed plan.</strong> One round-1 plan per comparison, reused by every variant.</li>
+      <li><strong>Shared round-1 corpus.</strong> Round-1 pages are searched and fetched once and evaluated by every variant. Later rounds search live, so variants diverge after round 1.</li>
+      <li><strong>Sequential execution.</strong> Variants run one after another on one GPU.</li>
+      <li><strong>Request gating.</strong> In-flight model calls are capped at what the Ollama server actually runs in parallel, which is one. E1 predates this.</li>
+    </ul>
+    <p><strong>What wall clock means here:</strong> a variant’s time runs from its first call to its report. It includes every round-1 evaluation and all of round 2’s searching and fetching. It excludes the shared plan and round-1 fetch, which happen once before any variant starts.</p>
+  </section>
+
+  <section id="results">
+    <h2>Results</h2>
+    <h3>4.1 One model in every role (E1, E2)</h3>
+    <p>Six runs with one model in all three roles. E1 and E2 share settings but not their round-1 pages, so compare within an experiment first.</p>
+
+    <div class="metric-grid">
+      <div><strong>gpt-oss:20b</strong><b class="sparse-label">1.8 min</b><span>41 claims · covered</span></div>
+      <div><strong>gemma4:26b-a4b</strong><b class="sparse-label">13.1 min</b><span>27 claims · budget exhausted</span></div>
+      <div><strong>muse-glimmer:30b-mlx</strong><b class="dense-label">13.8 min</b><span>30 claims · covered</span></div>
+      <div><strong>qwen3.8</strong><b class="dense-label">18.5 min</b><span>30 claims · covered</span></div>
+      <div><strong>gemma4:31b-mlx</strong><b class="dense-label">20.6 min</b><span>30 claims · covered</span></div>
+      <div><strong>gemma4:31b (GGUF)</strong><b class="dense-label">30.2 min</b><span>33 claims · covered</span></div>
+    </div>
+    <p class="figure-caption"><strong>Figure 2.</strong> Wall clock per run with one model in all three roles. The same gemma4:31b weights appear twice as different builds in different experiments, so that is not a controlled build comparison.</p>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Variant</th><th>Exp</th><th>Wall</th><th>Rounds</th><th>Pages</th><th>Claims</th><th>Figures</th><th>Agreed</th><th>Words</th><th>Stop</th></tr></thead>
+      <tbody>
+        <tr><th colspan="10">E1 · 42 agreed figures</th></tr>
+        <tr><td><code>gpt-oss:20b</code></td><td>E1</td><td>108 s</td><td>2</td><td>9</td><td>41</td><td>43</td><td>35</td><td>752</td><td><code>covered</code></td></tr>
+        <tr><td><code>muse-glimmer:30b-mlx</code></td><td>E1</td><td>825 s</td><td>2</td><td>9</td><td>30</td><td>36</td><td>34</td><td>905</td><td><code>covered</code></td></tr>
+        <tr><td><code>qwen3.8</code></td><td>E1</td><td>1,111 s</td><td>2</td><td>10</td><td>30</td><td>46</td><td>41</td><td>961</td><td><code>covered</code></td></tr>
+        <tr><td><code>gemma4:31b-mlx</code></td><td>E1</td><td>1,234 s</td><td>2</td><td>10</td><td>30</td><td>36</td><td>31</td><td>585</td><td><code>covered</code></td></tr>
+        <tr><th colspan="10">E2 · 16 agreed figures</th></tr>
+        <tr><td><code>gemma4:26b-a4b</code></td><td>E2</td><td>787 s</td><td>2</td><td>13</td><td>27</td><td>16</td><td>16</td><td>479</td><td><code>budget_exhausted</code></td></tr>
+        <tr><td><code>gemma4:31b</code></td><td>E2</td><td>1,812 s</td><td>1</td><td>8</td><td>33</td><td>27</td><td>16</td><td>592</td><td><code>covered</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <p>A stricter bar in E1—figures found by at least three of the four models—gives the same order: qwen3.8 found all 34, gpt-oss 32, gemma4:31b-mlx 30, muse-glimmer 29. gpt-oss’s 41 claims are more granular rather than more complete.</p>
+    <p>Every one of the six reports passed the citation gate, and every number in every report appears in that run’s own claims. That is fidelity to the evidence, not correctness.</p>
+
+    <h3>4.2 Same family, dense vs sparse (E2)</h3>
+    <p>gemma4:31b and gemma4:26b-a4b share a vendor, a generation, a quantization and, within E2, the same round-1 pages. The sparse model took <strong>787 s against 1,812 s</strong>. It closed neither sub-question in round 1, so it ran a second round and evaluated 13 pages to the dense model’s 8. That second round added no claims. On the eight shared round-1 page–sub-question pairs, the dense model found claims on 6 pages (33 claims) and the sparse model on 5 (27). The dense model’s 27 distinct figures include all 16 of the sparse model’s, plus 11 more.</p>
+    <p>One reliability event is worth noting. The sparse Gemma’s first synthesis call spent its entire 16,384-token budget thinking (56,072 characters) and returned no report. The automatic retry succeeded.</p>
+
+    <h3>4.3 Prefill and decode</h3>
+    <p>A separate micro-benchmark isolates per-token speed. Each model got one ~6–7k-token prompt with a random prefix to defeat prompt caching, one warm-up call, and then the mean of two calls.</p>
+    <div class="speed-grid">
+      <div><h4>Prefill · tokens/s</h4><p><strong class="sparse-label">gpt-oss:20b</strong> 1,369<br><strong class="sparse-label">gemma4:26b-a4b</strong> 1,155<br><strong class="dense-label">muse-glimmer:30b-mlx</strong> 345<br><strong class="dense-label">qwen3.8</strong> 125<br><strong class="dense-label">gemma4:31b</strong> 62</p></div>
+      <div><h4>Decode · tokens/s</h4><p><strong class="sparse-label">gpt-oss:20b</strong> 61.4<br><strong class="sparse-label">gemma4:26b-a4b</strong> 64.9<br><strong class="dense-label">muse-glimmer:30b-mlx</strong> 19.5<br><strong class="dense-label">qwen3.8</strong> 19.7<br><strong class="dense-label">gemma4:31b</strong> 8.6</p></div>
+    </div>
+
+    <h3>4.4 Where the tokens go</h3>
+    <p>Planner and evaluator calls ask for JSON with thinking enabled. For those calls Ollama leaves thinking out of <code>eval_count</code>, which is why the raw completion column is small next to the thinking column.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Variant</th><th>Calls</th><th>Prompt tokens</th><th>Raw completion</th><th>Thinking chars</th><th>Output chars</th><th>Thinking share</th></tr></thead>
+      <tbody>
+        <tr><td><code>gpt-oss:20b</code></td><td>11</td><td>22,580</td><td>3,031</td><td>5,793</td><td>10,953</td><td>35%</td></tr>
+        <tr><td><code>muse-glimmer:30b-mlx</code></td><td>11</td><td>34,309</td><td>5,982</td><td>59,386</td><td>11,093</td><td>84%</td></tr>
+        <tr><td><code>qwen3.8</code></td><td>12</td><td>35,780</td><td>5,388</td><td>32,628</td><td>13,927</td><td>70%</td></tr>
+        <tr><td><code>gemma4:31b-mlx</code></td><td>12</td><td>34,941</td><td>5,572</td><td>30,638</td><td>8,784</td><td>78%</td></tr>
+        <tr><td><code>gemma4:26b-a4b</code></td><td>16</td><td>51,817</td><td>24,875</td><td>128,662</td><td>8,710</td><td>94%</td></tr>
+        <tr><td><code>gemma4:31b</code></td><td>9</td><td>24,718</td><td>4,167</td><td>21,309</td><td>8,423</td><td>72%</td></tr>
+      </tbody>
+    </table></div>
+    <p>The sparse Gemma generated six times the thinking of its dense sibling (128,662 vs 21,309 characters) and still finished in under half the time. Its raw completion count is inflated by the failed 16,384-token synthesis call, which ran outside JSON mode.</p>
+
+    <h3>4.5 A mixed team (E3)</h3>
+    <p>Because the writer sees only claims, the reasoning was to put a fast model where calls repeat—the reader—and a slower model where the work happens once—the writer. E3 tests that against both members run alone, on the same plan and the same six round-1 documents.</p>
+    <div class="role-grid">
+      <div><h4>Setup</h4><p><strong>Team</strong><br><code>gpt-oss → gpt-oss → qwen3.8</code><br><strong>244 s</strong></p></div>
+      <div><h4>Setup</h4><p><strong>gpt-oss alone</strong><br><code>gpt-oss → gpt-oss → gpt-oss</code><br><strong>108 s</strong></p></div>
+      <div><h4>Setup</h4><p><strong>qwen3.8 alone</strong><br><code>qwen3.8 → qwen3.8 → qwen3.8</code><br><strong>1,023 s</strong></p></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Setup</th><th>Wall</th><th>Pages</th><th>Sources</th><th>Claims</th><th>Figures</th><th>Agreed</th><th>Only here</th><th>Words</th><th>Traceable</th></tr></thead>
+      <tbody>
+        <tr><td>Team</td><td>244 s</td><td>11</td><td>16</td><td>31</td><td>30</td><td>30 / 32</td><td>0</td><td>850</td><td>29 / 29</td></tr>
+        <tr><td>gpt-oss alone</td><td>108 s</td><td>9</td><td>13</td><td>32</td><td>28</td><td>28 / 32</td><td>0</td><td>721</td><td>28 / 28</td></tr>
+        <tr><td>qwen3.8 alone</td><td>1,023 s</td><td>11</td><td>12</td><td>34</td><td>38</td><td>29 / 32</td><td>9</td><td>1,050</td><td>37 / 37</td></tr>
+      </tbody>
+    </table></div>
+    <p>The team ran in 244 s, 4.2× faster than qwen3.8 alone and 2.3× slower than gpt-oss alone. All three runs finished with <code>covered</code>, cited 6 sources and passed the citation gate.</p>
+    <p><strong>The coverage difference between the team and gpt-oss alone is noise.</strong> Both used gpt-oss as the reader. Across the two gpt-oss runs on identical inputs, 26 figures matched, 3 appeared only in the team’s run and 1 only in the solo run. That run-to-run variation is as large as the 30-vs-28 gap, and the writer cannot add figures anyway. qwen3.8 was the more thorough reader.</p>
+    <p>What the slower writer did produce is a longer report: 850 words against 721 from the same claims base. Prose quality was not measured.</p>
+  </section>
+
+  <section class="note-boundaries">
+    <h2>Limits</h2>
+    <p>This is nine instrumented runs on one question, one laptop, one GPU and one set of effort settings. The results describe this agent configuration and workload; they do not establish a general ranking of model families or a universal advantage for sparse models.</p>
+  </section>
+
+  <footer class="note-footer">
+    Runs: E1 <code>cmp_9a1b6a83bf1b4264</code> · E2 <code>cmp_2739905916fa4ebe</code> · E3 <code>cmp_eed3a68a252e4e9b</code>. All figures and tables are computed from the published data.
+  </footer>
+</article>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Data Curator — a biweekly newsletter by Hillel Adler</p>
+      <p class="footer-links">
+        <a href="https://www.linkedin.com/newsletters/data-curator-7365797519051677698">LinkedIn</a> •
+        <a href="https://rss.app/feeds/kDpYVwGCRAAz6UXc.xml">RSS</a>
+      </p>
+    </div>
+  </footer>
+  <script data-goatcounter="https://data-curator.goatcounter.com/count"
+          async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -137,6 +137,82 @@ nav {
 .about-page h1 { font-size: 2rem; margin-bottom: 24px; }
 .about-page p { margin-bottom: 16px; color: #333; }
 
+/* ── Research Notes ── */
+.research-page,
+.research-note { max-width: 720px; margin: 0 auto; padding: 64px 24px; }
+.research-page h1,
+.research-note h1 { font-size: 2rem; margin-bottom: 16px; }
+.research-intro { max-width: 640px; color: #444; margin-bottom: 40px; }
+.research-empty {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 0;
+  color: var(--muted);
+}
+.research-list { list-style: none; }
+.research-list li { padding: 24px 0; border-top: 1px solid var(--border); }
+.research-list li:last-child { border-bottom: 1px solid var(--border); }
+.research-list h2 { font-size: 1.35rem; margin-bottom: 6px; }
+.research-list h2 a { color: var(--text); text-decoration: none; }
+.research-list h2 a:hover { color: var(--accent); }
+.research-list p { color: #444; }
+.research-note .note-lede { color: #444; font-size: 1.1rem; margin-bottom: 32px; }
+.research-note section { margin-top: 32px; }
+.research-note h2 { font-size: 1.35rem; margin-bottom: 10px; }
+.research-note details { border-top: 1px solid var(--border); padding: 16px 0; }
+.research-note details:last-child { border-bottom: 1px solid var(--border); }
+.research-note summary { cursor: pointer; font-weight: 700; }
+.research-note details > :not(summary) { margin-top: 12px; }
+.back-link { color: var(--accent); text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+
+/* ── Research note detail ── */
+.research-note-full { max-width: 1040px; }
+.research-note-full > h1 { font-size: clamp(2.4rem, 6vw, 4rem); line-height: 1.05; letter-spacing: -1.5px; margin: 8px 0 12px; }
+.research-kicker { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-size: .76rem; }
+.research-note-full .note-lede { max-width: 720px; font-size: 1.2rem; line-height: 1.5; }
+.note-meta { max-width: 720px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 22px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 18px 0; margin: 28px 0; font-size: .94rem; }
+.note-meta dt { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.note-meta dd { color: #444; }
+.note-toc { display: flex; flex-wrap: wrap; gap: 8px 20px; max-width: 720px; margin: 24px 0 48px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: .9rem; }
+.research-note-full section { max-width: 720px; margin-top: 52px; }
+.research-note-full section h2 { font-size: 1.65rem; border-top: 1px solid var(--border); padding-top: 14px; margin-bottom: 18px; }
+.research-note-full section h3 { font-size: 1.25rem; margin: 34px 0 12px; }
+.research-note-full li { margin-bottom: 12px; }
+.research-note-full .findings strong { color: var(--text); }
+.research-note-full .table-wrap { max-width: 1040px; margin: 22px 0 28px; overflow-x: auto; }
+.research-note-full table { width: 100%; border-collapse: collapse; font-size: .87rem; line-height: 1.45; white-space: nowrap; }
+.research-note-full th { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); font-size: .7rem; text-align: left; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #aaa; padding: 8px 10px; }
+.research-note-full td { border-bottom: 1px solid var(--border); padding: 8px 10px; vertical-align: top; }
+.research-note-full tbody th { background: #f1f1ed; color: var(--text); text-transform: none; letter-spacing: 0; font-size: .8rem; }
+.sparse-label { color: var(--accent); }
+.dense-label { color: #a45712; }
+.note { color: var(--muted); font-size: .92rem; }
+.note-diagram { max-width: 1040px; margin: 40px 0; }
+.pipeline { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: .82rem; }
+.pipeline span { border: 1px solid #b8b8b0; background: var(--card-bg); padding: 10px 12px; border-radius: 5px; }
+.pipeline .key { border-color: var(--accent); color: var(--accent); }
+.pipeline b { color: var(--muted); }
+.note-diagram figcaption, .figure-caption { color: var(--muted); font-size: .88rem; margin-top: 12px; }
+.metric-grid, .speed-grid, .role-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0 10px; }
+.metric-grid > div, .speed-grid > div, .role-grid > div { border-top: 3px solid var(--border); background: var(--card-bg); padding: 14px; }
+.metric-grid strong, .metric-grid b, .metric-grid span { display: block; }
+.metric-grid strong, .role-grid h4, .speed-grid h4 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: .8rem; }
+.metric-grid b { font-size: 1.35rem; margin: 8px 0 2px; }
+.metric-grid span { color: var(--muted); font-size: .84rem; }
+.speed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.speed-grid h4, .role-grid h4 { margin: 0 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.speed-grid p, .role-grid p { font-size: .92rem; }
+.note-boundaries { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+.research-note-full .note-footer { max-width: 720px; border-top: 0; padding-top: 0; margin-top: 30px; text-align: left; }
+@media (max-width: 700px) {
+  .note-meta { grid-template-columns: 1fr; gap: 2px; }
+  .note-meta dd { margin-bottom: 9px; }
+  .metric-grid, .role-grid { grid-template-columns: 1fr 1fr; }
+  .speed-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 460px) { .metric-grid, .role-grid { grid-template-columns: 1fr; } .pipeline { justify-content: flex-start; } }
+
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--border);
