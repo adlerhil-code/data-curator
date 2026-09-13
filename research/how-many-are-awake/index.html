@@ -32,6 +32,11 @@
   <h1>How many are awake?</h1>
   <p class="note-lede">Sparse and dense local models inside a multi-hop research agent: nine instrumented runs on one question and one laptop, with the raw data.</p>
 
+  <figure class="routing-figure" aria-label="Thirty-two expert slots, four active">
+    <div class="expert-strip" aria-hidden="true"><i class=""></i><i class=""></i><i class=""></i><i class="active"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="active"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="active"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class="active"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+    <figcaption>gpt-oss:20b holds 32 experts in each mixture-of-experts layer and routes every token to 4 of them. Which four changes token to token.</figcaption>
+  </figure>
+
   <dl class="note-meta">
     <dt>Question</dt>
     <dd>“What did the PISA 2025 study find about Israel, and how do the results compare with previous cycles?”</dd>
@@ -138,6 +143,16 @@
     </div>
     <p class="figure-caption"><strong>Figure 2.</strong> Wall clock per run with one model in all three roles. The same gemma4:31b weights appear twice as different builds in different experiments, so that is not a controlled build comparison.</p>
 
+    <figure class="bar-figure" aria-labelledby="wall-clock-caption">
+      <div class="bar-row sparse"><span>gpt-oss:20b</span><i style="width: 6%"></i><b>1.8 min</b></div>
+      <div class="bar-row sparse"><span>gemma4:26b-a4b</span><i style="width: 43%"></i><b>13.1 min</b></div>
+      <div class="bar-row dense"><span>muse-glimmer:30b-mlx</span><i style="width: 46%"></i><b>13.8 min</b></div>
+      <div class="bar-row dense"><span>qwen3.8</span><i style="width: 61%"></i><b>18.5 min</b></div>
+      <div class="bar-row dense"><span>gemma4:31b-mlx</span><i style="width: 68%"></i><b>20.6 min</b></div>
+      <div class="bar-row dense"><span>gemma4:31b (GGUF)</span><i style="width: 100%"></i><b>30.2 min</b></div>
+      <figcaption id="wall-clock-caption"><strong>Figure 3.</strong> Wall clock per single-model run. Sparse models are blue; dense models are orange.</figcaption>
+    </figure>
+
     <div class="table-wrap"><table>
       <thead><tr><th>Variant</th><th>Exp</th><th>Wall</th><th>Rounds</th><th>Pages</th><th>Claims</th><th>Figures</th><th>Agreed</th><th>Words</th><th>Stop</th></tr></thead>
       <tbody>
@@ -165,6 +180,13 @@
       <div><h4>Prefill · tokens/s</h4><p><strong class="sparse-label">gpt-oss:20b</strong> 1,369<br><strong class="sparse-label">gemma4:26b-a4b</strong> 1,155<br><strong class="dense-label">muse-glimmer:30b-mlx</strong> 345<br><strong class="dense-label">qwen3.8</strong> 125<br><strong class="dense-label">gemma4:31b</strong> 62</p></div>
       <div><h4>Decode · tokens/s</h4><p><strong class="sparse-label">gpt-oss:20b</strong> 61.4<br><strong class="sparse-label">gemma4:26b-a4b</strong> 64.9<br><strong class="dense-label">muse-glimmer:30b-mlx</strong> 19.5<br><strong class="dense-label">qwen3.8</strong> 19.7<br><strong class="dense-label">gemma4:31b</strong> 8.6</p></div>
     </div>
+    <figure class="bar-figure speed-figure" aria-labelledby="speed-caption">
+      <div class="speed-columns">
+        <div><h4>Prefill · tokens/s</h4><div class="bar-row sparse"><span>gpt-oss</span><i style="width: 100%"></i><b>1,369</b></div><div class="bar-row sparse"><span>gemma sparse</span><i style="width: 84%"></i><b>1,155</b></div><div class="bar-row dense"><span>muse</span><i style="width: 25%"></i><b>345</b></div><div class="bar-row dense"><span>qwen</span><i style="width: 9%"></i><b>125</b></div><div class="bar-row dense"><span>gemma dense</span><i style="width: 5%"></i><b>62</b></div></div>
+        <div><h4>Decode · tokens/s</h4><div class="bar-row sparse"><span>gemma sparse</span><i style="width: 100%"></i><b>64.9</b></div><div class="bar-row sparse"><span>gpt-oss</span><i style="width: 95%"></i><b>61.4</b></div><div class="bar-row dense"><span>qwen</span><i style="width: 30%"></i><b>19.7</b></div><div class="bar-row dense"><span>muse</span><i style="width: 30%"></i><b>19.5</b></div><div class="bar-row dense"><span>gemma dense</span><i style="width: 13%"></i><b>8.6</b></div></div>
+      </div>
+      <figcaption id="speed-caption"><strong>Figure 4.</strong> Cache-busted prefill and decode speed, each on its own scale.</figcaption>
+    </figure>
 
     <h3>4.4 Where the tokens go</h3>
     <p>Planner and evaluator calls ask for JSON with thinking enabled. For those calls Ollama leaves thinking out of <code>eval_count</code>, which is why the raw completion column is small next to the thinking column.</p>

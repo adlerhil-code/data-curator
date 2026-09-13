@@ -167,10 +167,10 @@ nav {
 .back-link:hover { text-decoration: underline; }
 
 /* ── Research note detail ── */
-.research-note-full { max-width: 1040px; }
-.research-note-full > h1 { font-size: clamp(2.4rem, 6vw, 4rem); line-height: 1.05; letter-spacing: -1.5px; margin: 8px 0 12px; }
+.research-note-full { max-width: 1080px; background: #f6f7f9; color: #17202a; }
+.research-note-full > h1 { font-family: 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif; font-size: clamp(2.6rem, 6vw, 4rem); line-height: 1; letter-spacing: -1.5px; margin: 8px 0 12px; }
 .research-kicker { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-size: .76rem; }
-.research-note-full .note-lede { max-width: 720px; font-size: 1.2rem; line-height: 1.5; }
+.research-note-full .note-lede { max-width: 720px; font-size: 1.22rem; line-height: 1.5; font-style: italic; color: #46525e; }
 .note-meta { max-width: 720px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 22px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 18px 0; margin: 28px 0; font-size: .94rem; }
 .note-meta dt { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .note-meta dd { color: #444; }
@@ -194,6 +194,21 @@ nav {
 .pipeline .key { border-color: var(--accent); color: var(--accent); }
 .pipeline b { color: var(--muted); }
 .note-diagram figcaption, .figure-caption { color: var(--muted); font-size: .88rem; margin-top: 12px; }
+.routing-figure { max-width: 720px; margin: 24px 0 30px; }
+.expert-strip { display: grid; grid-template-columns: repeat(32, 1fr); gap: 3px; max-width: 560px; }
+.expert-strip i { display: block; aspect-ratio: 1; border-radius: 2px; background: #dce1e7; }
+.expert-strip i.active { background: #2f6bdb; }
+.routing-figure figcaption { max-width: 720px; color: #5f6b77; font-size: .86rem; margin-top: 8px; }
+.bar-figure { max-width: 1040px; margin: 30px 0 38px; padding: 20px 0; border-top: 1px solid #aeb7c1; border-bottom: 1px solid #d5dbe2; }
+.bar-row { display: grid; grid-template-columns: 170px minmax(20px, 1fr) 78px; align-items: center; gap: 10px; margin: 8px 0; font-family: 'Courier New', monospace; font-size: .78rem; }
+.bar-row i { display: block; height: 15px; border-radius: 2px; background: #2f6bdb; }
+.bar-row.dense i { background: #c76a12; }
+.bar-row b { font-weight: 400; white-space: nowrap; }
+.bar-figure figcaption { color: #46525e; font-size: .88rem; margin-top: 14px; }
+.speed-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.speed-columns h4 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #5f6b77; font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; margin: 0 0 12px; }
+.speed-columns .bar-row { grid-template-columns: 96px minmax(20px, 1fr) 54px; font-size: .72rem; }
+.speed-figure { border-top: 0; }
 .metric-grid, .speed-grid, .role-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0 10px; }
 .metric-grid > div, .speed-grid > div, .role-grid > div { border-top: 3px solid var(--border); background: var(--card-bg); padding: 14px; }
 .metric-grid strong, .metric-grid b, .metric-grid span { display: block; }
@@ -210,8 +225,10 @@ nav {
   .note-meta dd { margin-bottom: 9px; }
   .metric-grid, .role-grid { grid-template-columns: 1fr 1fr; }
   .speed-grid { grid-template-columns: 1fr; }
+  .speed-columns { grid-template-columns: 1fr; gap: 22px; }
+  .bar-row { grid-template-columns: 125px minmax(20px, 1fr) 68px; }
 }
-@media (max-width: 460px) { .metric-grid, .role-grid { grid-template-columns: 1fr; } .pipeline { justify-content: flex-start; } }
+@media (max-width: 460px) { .metric-grid, .role-grid { grid-template-columns: 1fr; } .pipeline { justify-content: flex-start; } .expert-strip { grid-template-columns: repeat(16, 1fr); } .bar-row { grid-template-columns: 108px minmax(20px, 1fr) 62px; font-size: .7rem; } }
 
 /* ── Footer ── */
 footer {
