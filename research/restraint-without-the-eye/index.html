@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://gc.zgo.at; img-src 'self' data: https://data-curator.goatcounter.com; style-src 'self' 'unsafe-inline'; connect-src https://data-curator.goatcounter.com; frame-ancestors 'none'; base-uri 'self'; form-action 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <title>Restraint Without the Eye</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" type="application/rss+xml" title="Data Curator RSS" href="https://rss.app/feeds/kDpYVwGCRAAz6UXc.xml">
+  <meta name="description" content="At the intersection of Technology, Data, Intelligence, Analysis, AI and Humanity.">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">Data Curator</a>
+      <div class="nav-links">
+        <a href="/">Editions</a>
+        <a href="/research/">Research Notes</a>
+        <a href="/about">About</a>
+        <a href="https://www.linkedin.com/newsletters/data-curator-7365797519051677698" class="subscribe-btn">Subscribe on LinkedIn</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    
+<article class="research-note restraint-note">
+  <header class="restraint-top">
+    <p><a class="back-link" href="/research/">← All Research Notes</a></p>
+    <div class="restraint-eyebrow">Reasoning-distillation pilot · experiment 2 · 19–21 September 2026</div>
+    <h1>Restraint Without the Eye</h1>
+    <p class="restraint-lede">A second attempt at teaching a small model we own to reason like a stronger one. This time the student learned something real — when the expert stays silent — and on the final exam that was not enough to beat the model we started with.</p>
+    <div class="restraint-meta">
+      <span><b>4</b> stages, each with a prediction that could fail</span>
+      <span><b>24</b> fixed screening cases</span>
+      <span><b>45</b> unseen exam cases</span>
+      <span><b>7</b> fine-tuning runs</span>
+      <span><b>~2 days</b> of one laptop, on top of 5 for the first attempt</span>
+    </div>
+  </header>
+
+  <div class="restraint-body">
+    <div class="restraint-verdict">
+      <p class="line">On 45 unseen cases the retrained student is not better than the untrained one.</p>
+      <p>It flags innocent records in <strong>7 cases instead of 18</strong> and gets one more case fully right — but it stays silent on half the cases that contain a real clue, finding <strong>25 of 56</strong> where the untrained model finds 43. What transferred was the teacher's restraint, copied almost exactly. What did not transfer was the teacher's eye.</p>
+    </div>
+
+    <h2>Where this picks up</h2>
+    <p>The first attempt trained the student on 133 of the teacher's full worked examples and got nothing: trained lightly it answered exactly as before, trained harder it flagged everything, then repeated itself until it ran out of room. A review of the published work said that failure is a documented one — a compact model made worse by a small set of very long expert traces — and that every method which works is staged. So experiment 2 ran four stages on the same 133 examples, each with a prediction written down in advance, with a rule to stop if nothing moved.</p>
+
+    <h2>Stage A: the one thing that worked</h2>
+    <p>The hypothesis was that the student was absorbing the <em>length</em> of the teacher's thinking rather than its content — the teacher writes 1,800 to 5,600 words of reasoning per case. We cut every example to its first ~800 words of reasoning plus the answer, changed nothing else, and trained again at the same strength that had collapsed before.</p>
+
+    <div class="restraint-scroll">
+      <table>
+        <thead><tr><th>Training material</th><th class="num">Answered</th><th class="num">Rounds right</th><th class="num">Clues found</th><th class="num">Decoys flagged</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><strong>Untrained student</strong></td><td class="num">18 / 18</td><td class="num">8</td><td class="num">15 of 23</td><td class="num">15</td><td>baseline</td></tr>
+          <tr class="dim"><td>Full traces, half dose</td><td class="num">11 / 18</td><td class="num">4</td><td class="num">0 of 23</td><td class="num">0</td><td><span class="restraint-tag worse">flags nothing</span></td></tr>
+          <tr class="dim"><td>Full traces, full dose</td><td class="num">2 / 18</td><td class="num">2</td><td class="num">4 of 23</td><td class="num">0</td><td><span class="restraint-tag dead">loops</span></td></tr>
+          <tr class="highlight"><td><strong>Prefixes only, full dose</strong></td><td class="num">18 / 18</td><td class="num">12</td><td class="num">14 of 23</td><td class="num">3</td><td><span class="restraint-tag better">terminates</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="restraint-note-caption">Screening set: 18 held-out cases from runs where formatting cannot give the answer away (24 in all), the same for every checkpoint, judged by making the model answer rather than by any training statistic.</p>
+
+    <p>The prediction held. The same 133 examples that could not produce a finished answer now produce one every time, and the screening set said the new student was better than the untrained one: more cases fully right, a fifth of the innocent flags. Along the way the screen showed something the first attempt's smaller screen could not: the full-trace student's first failure is not over-flagging but <strong>flagging nothing at all</strong>, on every case with something to find. It absorbs the teacher's caution long before it absorbs anything else.</p>
+
+    <blockquote>Prefix length is now a standing rule for anything we generate from this teacher. It is the mechanism behind pilot 1's collapse, and it is fixed.</blockquote>
+
+    <h2>Stages B and C: two ideas that did not help</h2>
+    <div class="restraint-stages">
+      <div class="restraint-stage"><div class="dose">B · pairs</div><p class="what"><b>Learn from the rejected answers</b>Pilot 1 discarded 466 teacher answers. Pairing an accepted answer with a rejected one on the same case gives a "this one, not that one" signal that ordinary training never sees. Two runs, 103 and 45 pairs. The first taught the student to flag <em>more</em> — the rejected answers had mostly flagged too little — and it gave back all its restraint. The second, on faults only, made it worse on everything.</p></div>
+      <div class="restraint-stage"><div class="dose">C · practice</div><p class="what"><b>Practise on our own answer key</b>The student answered every training case four times over (572 attempts, one that looped); the key marked 256 correct; it was trained on 174 of its own passes. Its best checkpoint landed within a hair of where it started. Practising on its own answers taught it its own habits back.</p></div>
+    </div>
+
+    <h2>The exam</h2>
+    <p>Forty-five held-out cases from fourteen operations, never used for training and never used to choose a checkpoint — the 24 screening cases were excluded for exactly that reason. Three contestants: the untrained student, the Stage A student, and the teacher whose examples it learned from.</p>
+
+    <div class="restraint-scroll">
+      <table>
+        <thead><tr><th>Contestant</th><th class="num">Rounds right</th><th class="num">Clues found</th><th class="num">Cases with an innocent flag</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">MCC</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Untrained student</strong></td><td class="num">22 / 45</td><td class="num">43 of 56</td><td class="num">18</td><td class="num">0.61</td><td class="num">0.77</td><td class="num">0.61</td></tr>
+          <tr class="highlight"><td><strong>Trained student</strong> (Stage A)</td><td class="num">23 / 45</td><td class="num">25 of 56</td><td class="num">7</td><td class="num">0.61</td><td class="num">0.45</td><td class="num">0.44</td></tr>
+          <tr><td>Teacher (Qwen3.6)</td><td class="num">26 / 45</td><td class="num">35 of 56</td><td class="num">7</td><td class="num">0.81</td><td class="num">0.63</td><td class="num">0.66</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="restraint-note-caption">MCC is a single score from −1 to 1 that credits both finding real clues and leaving innocent records alone; 0 is chance. Scored against the expert-reviewed key: signal-carrying clues must be found, routine records count neither way, decoys must not be flagged.</p>
+
+    <p>By the pilot's own pass rule — no innocent flag and most clues found — the two students tie, 23 cases to 22. By any measure that weighs finding things, the untrained one wins. The screening set had said the opposite, and 45 unseen cases overrule 18 cases that were used to pick the winner.</p>
+
+    <h3>It copied the shape, not the accuracy</h3>
+    <p>The clearest finding of the experiment sits in the pattern of when each model stays silent:</p>
+
+    <div class="restraint-grid">
+      <div class="restraint-card"><div class="n">12 / 13</div><div class="k">empty cases where the <strong>trained student</strong> correctly flags nothing (teacher 12 / 13, untrained 2 / 13)</div></div>
+      <div class="restraint-card bad"><div class="n">15 / 32</div><div class="k">cases <em>with</em> a clue where the trained student flags nothing (teacher 12 / 32, untrained 3 / 32)</div></div>
+      <div class="restraint-card"><div class="n">7</div><div class="k">cases with an innocent flag, trained student — the teacher's exact number</div></div>
+      <div class="restraint-card bad"><div class="n">25 vs 35</div><div class="k">clues found by the student and the teacher, on the same cases</div></div>
+    </div>
+
+    <p>The student abstains where the teacher abstains, at the teacher's rates, and flags innocent records in the teacher's number of cases. Then, on the cases where it does speak, it is right less often: precision 0.61 against the teacher's 0.81. This is the effect the published work warned of — a student imitating its teacher's confidence without its competence — measured here in one table.</p>
+
+    <h2>Why the ceiling was low to begin with</h2>
+    <p>The teacher beats the untrained student by 0.05 on the exam, and does it by being careful rather than thorough: fewer innocent flags, but also fewer clues found (35 against 43). A student that copied this teacher perfectly would gain little. One that copies it imperfectly — the only kind there is — loses. The first attempt's bake-off already showed this teacher as "strict rather than thorough"; the exam shows how little room that leaves.</p>
+
+    <h2>What the experiment established</h2>
+    <ul>
+      <li><strong>The mechanism of pilot 1's failure.</strong> Long expert traces teach a small student to keep talking; cutting them to their opening teaches it to conclude. Reproduced across five checkpoints and two doses.</li>
+      <li><strong>What transfers first from a cautious teacher is caution.</strong> At half dose the full-trace student flags nothing anywhere; the prefix student learns the teacher's abstention pattern to within a case or two and finds far less than the teacher does.</li>
+      <li><strong>A screening set can mislead.</strong> Eighteen cases ranked the trained student clearly ahead; forty-five fresh ones put it behind. The exam was designed to be immune to that, and it was.</li>
+      <li><strong>Judge by generating, never by loss.</strong> Every checkpoint was judged by making it answer real cases. Training loss said "improving" during a run whose checkpoints looped, flagged nothing, or closed their answer with a stray brace.</li>
+    </ul>
+
+    <h2>Limits of this result</h2>
+    <ul>
+      <li><strong>Same 133 examples as pilot 1.</strong> Every stage reworked the material; none added to it. The result says how this material can and cannot be used, not what more of it would do.</li>
+      <li><strong>One formatting tell survives</strong> at 0.73 (0.5 means none). The test that would expose a model exploiting it — the same cases with differently written decoys — was built but not run, because it exists to explain a gain and there was none to explain.</li>
+      <li><strong>The answer key rests on one reviewer</strong> for the sample, extended by an AI grader. A second reviewer would make it sturdier.</li>
+      <li><strong>The preference stage used a first-draft trainer</strong> written for this experiment; the two runs are enough to say the pairs we have do not teach restraint, not that preference training never could.</li>
+    </ul>
+
+    <h2>What a third attempt would need</h2>
+    <div class="restraint-stages">
+      <div class="restraint-stage"><div class="dose">first</div><p class="what"><b>A teacher with real headroom</b>Its lead over the untrained student on this exam should be well above 0.05, and it should find more than the student does, not just accuse less. The current one fails both tests.</p></div>
+      <div class="restraint-stage"><div class="dose">second</div><p class="what"><b>Examples of finding, not declining</b>Abstention was learned from 40 of the 133 examples. Discrimination needs many more examples of the teacher pointing at the right record, generated at prefix length from the start.</p></div>
+      <div class="restraint-stage"><div class="dose">then</div><p class="what"><b>Scale, last</b>The two-week data run is only worth it with those two in hand. Everything needed to run it exists and runs unattended.</p></div>
+    </div>
+
+    <p>What we would not change is the exam. It is the reason this page says "no" with confidence instead of "yes" by mistake.</p>
+  </div>
+</article>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Data Curator — a biweekly newsletter by Hillel Adler</p>
+      <p class="footer-links">
+        <a href="https://www.linkedin.com/newsletters/data-curator-7365797519051677698">LinkedIn</a> •
+        <a href="https://rss.app/feeds/kDpYVwGCRAAz6UXc.xml">RSS</a>
+      </p>
+    </div>
+  </footer>
+  <script data-goatcounter="https://data-curator.goatcounter.com/count"
+          async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
