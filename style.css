@@ -253,6 +253,8 @@ nav {
 .restraint-note h3 { font-size: 19px; line-height: 1.3; margin: 26px 0 4px; }
 .restraint-note p { max-width: 68ch; margin: 12px 0; }
 .restraint-note strong { font-weight: 600; }
+.restraint-note ul { max-width: 68ch; padding-left: 20px; margin: 12px 0; }
+.restraint-note li { margin: 7px 0; }
 .restraint-note .restraint-top { padding: 54px 0 12px; border-bottom: 1px solid #dad8d0; }
 .restraint-note .restraint-eyebrow { font-weight: 600; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #7b838c; }
 .restraint-note .restraint-lede { font-size: 19px; color: #4b5158; max-width: 62ch; }
@@ -280,12 +282,15 @@ nav {
 .restraint-stage:last-child { border-bottom: 0; }
 .restraint-stage .dose { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #7b838c; padding-top: 2px; }
 .restraint-stage .what { margin: 0; max-width: none; }
-.restraint-stage .what b { display: block; font-family: 'Archivo Narrow', 'Arial Narrow', Arial, sans-serif; font-size: 17px; }
+.restraint-stage .what b { display: block; margin-bottom: 4px; font-family: 'Archivo Narrow', 'Arial Narrow', Arial, sans-serif; font-size: 17px; }
 .restraint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 20px 0; }
 .restraint-card { background: #fcfcfa; border: 1px solid #dad8d0; border-radius: 3px; padding: 16px 18px; }
 .restraint-card .n { font-family: 'Archivo Narrow', 'Arial Narrow', Arial, sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1; }
 .restraint-card .k { font-size: 14px; color: #4b5158; margin-top: 2px; }
 .restraint-card.bad .n { color: #a03a20; }
+.restraint-note .restraint-scroll + .restraint-note-caption { margin-top: 0; }
+.restraint-note .restraint-body > h2 + p,
+.restraint-note .restraint-body > h3 + p { margin-top: 12px; }
 @media (max-width: 620px) {
   .restraint-stage { grid-template-columns: 1fr; gap: 4px; }
 }
